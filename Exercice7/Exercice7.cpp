@@ -233,58 +233,73 @@ int main(int argc, char* argv[]) {
     }
     ++stride;
 
+    double delta2(0);
+    double xhere(0);
+    double xbefore(0);
+    double xafter(0);
+    double u2here(0);
+    double u2before(0);
+    double u2after(0);
     // Evolution :
     for (int i(1); i < N - 1; ++i) {
-      if (schema == "A")
-        fnext[i] = 2 * (1 - CFL * CFL) fnow[i] - fpast[i] +
-                   CFL * CFL * (fnow[i + 1] + fnow[i - 1]);
-      else if (schema == "B")
-        fnext[i] = 0.;  // TODO : Completer le schema B
-      else if (schema == "C")
-        fnext[i] = 0.;  // TODO : Completer le schema C
-      // Note : La syntaxe pour evaluer u^2 au point x est (*u2)(x)
+      xbefore = (i - 1) * dx;
+      xhere = xbefore + dx;
+      xafter = xhere + dx;
+      delta2 = dt * dt / dx / dx;
+      u2here = (*u2)(xhere);
+      u2before = (*u2)(xbefore);
+      u2after = (*u2)(xafter);
+      if (schema == "A") {
+        fnext[i] = 2 * (1 - delta2 * u2here) * fnow[i] - fpast[i] +
+                   delta2 * u2here * (fnow[i + 1] + fnow[i - 1]);
+      } else if (schema == "B") {
+        fnext[i] =
+            2 * (1 - delta2 * u2here) * fnow[i] - fpast[i] +
+            delta2 * (fnow[i + 1] * (u2here + 0.25 * (u2after - u2before)) +
+                      fnow[i + 1] * (u2here - 0.25 * (u2after - u2before)));
+      } else if (schema == "C")
+        fnext[i] =
+            -fpast[i] +
+            fnow[i] * (2 + delta2 * (u2after - 4 * u2here + u2before)) +
+            delta2 * (fnow[i + 1] * (u2here + 0.5 * (u2after - u2before)) +
+                      fnow[i + 1] * (u2here - 0.5 * (u2after - u2before)));
     }
 
     // Conditions aux bords :
     switch (cb_gauche) {
       case fixe:
-        fnext[0] = 0.;  // TODO : Completer la condition au bord gauche fixe
+        fnext[0] = 0.;
         break;
 
       case libre:
-        fnext[0] =
-            fnext[1];  // TODO : Completer la condition au bord gauche libre
+        fnext[0] = fnext[1];
         break;
 
       case harmonique:
-        fnext[0] =
-            0.;  // TODO : Completer la condition au bord gauche harmonique
+        fnext[0] = A * sin(omega * t);
         break;
 
       case sortie:
-        fnext[0] = 0.;  //        A* sin(w * t);  // TODO : Completer la
-                        //        condition au bord
-        //        gauche "sortie de l'onde"
+        fnext[0] = fpast[0] + sqrt((*u2)(0)) * (fpast[1] - fpast[0]);
         break;
     }
 
     switch (cb_droit) {
       case fixe:
-        fnext[N - 1] = 0;  // TODO : Completer la condition au bord droit fixe
+        fnext[N - 1] = 0;
         break;
 
       case libre:
-        fnext[N - 1] = 0.;  // TODO : Completer la condition au bord droit libre
+        fnext[N - 1] = fnext[N - 2];
         break;
 
       case harmonique:
-        fnext[N - 1] =
-            0.;  // TODO : Completer la condition au bord droit harmonique
+        fnext[N - 1] = A * sin(omega * t);
         break;
 
       case sortie:
-        fnext[N - 1] = 0.;  // TODO : Completer la condition au bord droit
-                            // "sortie de l'onde"
+        fnext[N - 1] =
+            fpast[N - 1] - sqrt((*u2)(L)) * (fpast[N - 2] - fpast[N - 1]);
         break;
     }
 

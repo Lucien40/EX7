@@ -1,6 +1,6 @@
 %% Chargement des resultats %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-fichier = '3';
+fichier = '7_2_a';
 data = load([fichier,'_u.out']);
 x = data(:,1);
 u = data(:,2);

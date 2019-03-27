@@ -71,7 +71,13 @@ class U2_tsunami : public U2 {
 // TODO : Calcul de l'energie de l'onde
 //
 
-double energie(vector<double> const& f, double const& dx) { return 0.; }
+double energie(vector<double> const& f, double const& dx) {
+  double sum(0);
+  for (size_t i = 0; i < f.size() - 1; i++) {
+    sum += 0.5 * (f[i] * f[i] + f[i + 1] * f[i + 1]);
+  }
+  return sum;
+}
 
 //
 // Surcharge de l'operateur pour ecrire les elements d'un tableau
@@ -280,7 +286,7 @@ int main(int argc, char* argv[]) {
         break;
 
       case sortie:
-        fnext[0] = fpast[0] + sqrt((*u2)(0)) * (fpast[1] - fpast[0]);
+        fnext[0] = fnow[0] + sqrt((*u2)(0)) * dt / dx * (fnow[1] - fnow[0]);
         break;
     }
 
@@ -298,8 +304,8 @@ int main(int argc, char* argv[]) {
         break;
 
       case sortie:
-        fnext[N - 1] =
-            fpast[N - 1] - sqrt((*u2)(L)) * (fpast[N - 2] - fpast[N - 1]);
+        fnext[N - 1] = fnow[N - 1] -
+                       sqrt((*u2)(L)) * dt / dx * (fnow[N - 2] - fnow[N - 1]);
         break;
     }
 

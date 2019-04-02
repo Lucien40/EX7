@@ -132,7 +132,9 @@ int main(int argc, char* argv[]) {
   }
 
   double dx = L / (N - 1);
+  cout << dx << endl;
   double dt = CFL * dx / sqrt(u2->max());
+  cout << dt << endl;
   bool ecrire_f = configFile.get<bool>("ecrire_f");  // Exporter f(x,t) ou non
   string schema = configFile.get<string>("schema");
   if (schema != "A" && schema != "B" && schema != "C") {
@@ -304,7 +306,7 @@ int main(int argc, char* argv[]) {
         break;
 
       case sortie:
-        fnext[N - 1] = fnow[N - 1] -
+        fnext[N - 1] = fnow[N - 1] +
                        sqrt((*u2)(L)) * dt / dx * (fnow[N - 2] - fnow[N - 1]);
         break;
     }

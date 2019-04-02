@@ -1,4 +1,4 @@
-tfin = 14
+tfin = 3
 L = 20
 u = 6
 type_u2 = const
@@ -6,8 +6,8 @@ CFL = 0.9
 Npoints = 1000
 ecrire_f = 1
 schema = A
-cb_gauche = sortie
-cb_droit = harmonique
+cb_gauche = harmonique
+cb_droit = fixe
 A = 1
 omega = 5
 output = 7_2_a

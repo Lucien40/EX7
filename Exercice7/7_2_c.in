@@ -1,0 +1,12 @@
+tfin = 50
+L = 20
+u = 6
+type_u2 = const
+CFL = 0.9
+Npoints = 500
+ecrire_f = 0
+schema = A
+cb_gauche = harmonique
+cb_droit = fixe
+A = 1
+n_stride = 1

@@ -264,13 +264,13 @@ int main(int argc, char* argv[]) {
         fnext[i] =
             2 * (1 - delta2 * u2here) * fnow[i] - fpast[i] +
             delta2 * (fnow[i + 1] * (u2here + 0.25 * (u2after - u2before)) +
-                      fnow[i + 1] * (u2here - 0.25 * (u2after - u2before)));
+                      fnow[i - 1] * (u2here - 0.25 * (u2after - u2before)));
       } else if (schema == "C")
         fnext[i] =
             -fpast[i] +
             fnow[i] * (2 + delta2 * (u2after - 4 * u2here + u2before)) +
             delta2 * (fnow[i + 1] * (u2here + 0.5 * (u2after - u2before)) +
-                      fnow[i + 1] * (u2here - 0.5 * (u2after - u2before)));
+                      fnow[i - 1] * (u2here - 0.5 * (u2after - u2before)));
     }
 
     // Conditions aux bords :

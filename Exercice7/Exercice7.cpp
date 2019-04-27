@@ -151,7 +151,7 @@ int main(int argc, char* argv[]) {
 
   // Conditions aux bords (les strings sont converties en valeurs numeriques a
   // l'aide d'un enumerateur) :
-  typedef enum { fixe, libre, harmonique, sortie } Cond_bord;
+  typedef enum { fixe, libre, harmonique, pulse, sortie } Cond_bord;
   Cond_bord cb_gauche, cb_droit;
 
   string cb = configFile.get<string>("cb_gauche");
@@ -161,6 +161,8 @@ int main(int argc, char* argv[]) {
     cb_gauche = libre;
   else if (cb == "harmonique")
     cb_gauche = harmonique;
+  else if (cb == "pulse")
+    cb_gauche = pulse;
   else if (cb == "sortie")
     cb_gauche = sortie;
   else {
@@ -170,6 +172,8 @@ int main(int argc, char* argv[]) {
             "libre"
             ", "
             "harmonique"
+            ","
+            "pulse"
             ", ou "
             "sortie"
             "."
@@ -184,6 +188,8 @@ int main(int argc, char* argv[]) {
     cb_droit = libre;
   else if (cb == "harmonique")
     cb_droit = harmonique;
+  else if (cb == "pulse")
+    cb_droit = pulse;
   else if (cb == "sortie")
     cb_droit = sortie;
   else {
@@ -193,6 +199,8 @@ int main(int argc, char* argv[]) {
             "libre"
             ", "
             "harmonique"
+            ","
+            "pulse"
             ", ou "
             "sortie"
             "."
@@ -201,7 +209,8 @@ int main(int argc, char* argv[]) {
   }
 
   double A, omega;  // Parametres d'excitation
-  if (cb_gauche == harmonique || cb_droit == harmonique) {
+  if (cb_gauche == harmonique || cb_droit == harmonique || cb_gauche == pulse ||
+      cb_droit == pulse) {
     A = configFile.get<double>("A");
     omega = configFile.get<double>("omega");
   }
@@ -284,7 +293,14 @@ int main(int argc, char* argv[]) {
         break;
 
       case harmonique:
-        fnext[0] = A * sin(omega * t);
+        fnext[0] = A * sin(omega * (t + dt));
+        break;
+
+      case pulse:
+        if (omega * (t + dt) < 2 * M_PI)
+          fnext[0] = A * sin(omega * (t + dt));
+        else
+          fnext[0] = 0;
         break;
 
       case sortie:
@@ -302,7 +318,14 @@ int main(int argc, char* argv[]) {
         break;
 
       case harmonique:
-        fnext[N - 1] = A * sin(omega * t);
+        fnext[N - 1] = A * sin(omega * (t + dt));
+        break;
+
+      case pulse:
+        if (omega * (t + dt) < 2 * M_PI)
+          fnext[N - 1] = A * sin(omega * (t + dt));
+        else
+          fnext[N - 1] = 0;
         break;
 
       case sortie:

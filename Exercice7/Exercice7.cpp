@@ -74,7 +74,7 @@ class U2_tsunami : public U2 {
 double energie(vector<double> const& f, double const& dx) {
   double sum(0);
   for (size_t i = 0; i < f.size() - 1; i++) {
-    sum += 0.5 * (f[i] * f[i] + f[i + 1] * f[i + 1]);
+    sum += 0.5 * (f[i] * f[i] + f[i + 1] * f[i + 1]) * dx;
   }
   return sum;
 }
